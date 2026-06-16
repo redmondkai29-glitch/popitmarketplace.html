@@ -7,140 +7,175 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a2e;
+            background-color: #0b0c10;
             color: #fff;
             margin: 0;
             padding: 20px;
             text-align: center;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #16162a;
+            max-width: 550px;
+            margin: 30px auto;
+            background: #1f2833;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.5);
-            border: 2px solid #e94560;
+            border-radius: 12px;
+            box-shadow: 0px 8px 30px rgba(0,0,0,0.7);
+            border: 1px solid #66fcf1;
         }
-        h1 { color: #e94560; margin-bottom: 5px; }
-        p.subtitle { color: #848ccf; font-size: 14px; margin-top: 0; }
+        h1 { color: #66fcf1; margin-bottom: 5px; font-size: 28px; }
+        p.subtitle { color: #c5a059; font-size: 14px; margin-top: 0; font-weight: bold; }
         .form-group {
-            margin: 20px 0;
+            margin: 25px 0;
             text-align: left;
         }
-        label { display: block; font-weight: bold; margin-bottom: 8px; color: #4ecc71;}
-        select, input {
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #66fcf1; font-size: 14px; text-transform: uppercase;}
+        input, select {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #4ecc71;
-            background: #0f0f1e;
+            padding: 14px;
+            border-radius: 6px;
+            border: 1px solid #45f3ff;
+            background: #0b0c10;
             color: #fff;
             font-size: 16px;
             box-sizing: border-box;
         }
         .price-box {
-            background: #0f0f1e;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 5px solid #e94560;
+            background: #0b0c10;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+            border-left: 5px solid #c5a059;
             text-align: left;
         }
-        .price-box h3 { margin: 0; color: #848ccf; font-size: 16px; }
-        .price-box p { margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #e94560; }
+        .price-box h3 { margin: 0; color: #66fcf1; font-size: 14px; text-transform: uppercase; }
+        .price-box p { margin: 8px 0 0 0; font-size: 26px; font-weight: bold; color: #fff; }
+        .deal-badge {
+            display: inline-block;
+            background: #25d366;
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: none;
+        }
         .btn {
-            background: #e94560;
             color: white;
             border: none;
             padding: 15px 20px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 6px;
             width: 100%;
             cursor: pointer;
-            transition: 0.3s;
-            margin-bottom: 10px;
+            transition: 0.2s;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .btn:hover { background: #ff5e7e; }
-        .btn-discord { background: #7289da; }
-        .btn-discord:hover { background: #5b73c7; }
-        .payment-section {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px dashed #333;
-        }
-        .payment-methods img { width: 50px; margin: 5px; vertical-align: middle; }
+        .btn-paypal { background: #00457c; border: 1px solid #0079c1; }
+        .btn-paypal:hover { background: #0079c1; }
+        .btn-discord { background: #5865F2; }
+        .btn-discord:hover { background: #4752C4; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Pop It Trading Marketplace</h1>
-    <p class="subtitle">Select your items, generate AI pricing, and trade instantly!</p>
+    <h1>Pop It Trading Shop</h1>
+    <p class="subtitle">Instant Valuation & Secure Checkout</p>
 
     <div class="form-group">
-        <label for="popit-type">Choose Pop It Item:</label>
-        <select id="popit-type" onchange="calculatePrice()">
-            <option value="rainbow-amongus" data-base="3.50">🌈 Rainbow Among Us (Common)</option>
-            <option value="glow-unicorn" data-base="5.00">✨ Glow-in-the-Dark Unicorn (Rare)</option>
-            <option value="mega-square" data-base="8.50">📦 Mega 100-Bubble Square (Epic)</option>
-            <option value="glitter-icecream" data-base="6.00">🍦 Glitter Ice Cream Cone (Rare)</option>
-        </select>
+        <label for="item-name">Enter Item Name:</label>
+        <input type="text" id="item-name" placeholder="e.g., Sparkly Boo, Real Sugar, Rainbow Banana" value="Sparkly Boo" oninput="calculatePrice()">
     </div>
 
     <div class="form-group">
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" value="1" min="1" max="50" oninput="calculatePrice()">
+        <label for="quantity">Quantity (Value Tier):</label>
+        <input type="number" id="quantity" value="1000" min="1" step="100" oninput="calculatePrice()">
     </div>
 
     <div class="price-box">
-        <h3>🤖 AI Generated Dynamic Price:</h3>
-        <p id="total-display">€3.50</p>
+        <h3>Calculated Value:</h3>
+        <p id="total-display">100 Robux (~€1.25)</p>
+        <div id="deal-status" class="deal-badge">🔥 BULK DEAL APPLIED!</div>
     </div>
 
-    <button class="btn btn-discord" onclick="orderViaDiscord()">💬 Order via Discord</button>
+    <button class="btn btn-paypal" onclick="payWithPayPal()">💳 Pay with PayPal</button>
 
-    <div class="payment-section">
-        <label>Accepted Real Money Payment Methods:</label>
-        <p style="font-size: 13px; color:#aaa; margin-bottom: 15px;">Pay securely via Stripe / PayPal links inside our Discord dm!</p>
-        <button class="btn" onclick="window.open('https://stripe.com', '_blank')">💳 Pay with Real Money</button>
-    </div>
+    <button class="btn btn-discord" onclick="orderViaDiscord()">💬 Submit Order & DM on Discord</button>
 </div>
 
 <script>
-    // Simple algorithm acting as the "AI pricing generator" 
+    // Global variables to hold data for checkout
+    let finalRobux = 100;
+    let finalCash = 1.25;
+
     function calculatePrice() {
-        const itemSelect = document.getElementById('popit-type');
-        const selectedOption = itemSelect.options[itemSelect.selectedIndex];
-        const basePrice = parseFloat(selectedOption.getAttribute('data-base'));
-        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const qty = parseInt(document.getElementById('quantity').value) || 0;
+        const dealStatus = document.getElementById('deal-status');
+        
+        let robuxValue = 0;
 
-        // "AI" Bulk Discount Modifier: More items = slightly cheaper price per unit!
-        let discount = 1.0;
-        if (quantity >= 10) discount = 0.85; // 15% off for bulk buying
-        else if (quantity >= 5) discount = 0.90; // 10% off
+        // Custom Pricing Logic based on your rules:
+        // 1k Sparkly Boo = 100 Robux base rate (0.1 Robux per item)
+        // 10k Sparkly Boo = 600 Robux bulk rate (0.06 Robux per item)
+        if (qty >= 10000) {
+            // Apply the heavy bulk discount rate for 10k items and up
+            robuxValue = Math.floor(qty * 0.06);
+            dealStatus.style.display = 'inline-block';
+            dealStatus.innerText = "🔥 MASSIVE DEAL APPLIED!";
+        } else if (qty >= 5000) {
+            // Mid-tier discount
+            robuxValue = Math.floor(qty * 0.08);
+            dealStatus.style.display = 'inline-block';
+            dealStatus.innerText = "🔥 20% BULK DISCOUNT DEAL!";
+        } else {
+            // Standard rate (1,000 items = 100 Robux)
+            robuxValue = Math.floor(qty * 0.1);
+            dealStatus.style.display = 'none';
+        }
 
-        let finalPrice = (basePrice * quantity * discount).toFixed(2);
-        document.getElementById('total-display').innerText = '€' + finalPrice;
+        // Standard developer exchange rate to convert Robux into real Euros cash (€0.0125 per Robux)
+        let cashPrice = (robuxValue * 0.0125).toFixed(2);
+
+        // Update global tracking variables
+        finalRobux = robuxValue;
+        finalCash = cashPrice;
+
+        // Display it nicely to the buyer
+        document.getElementById('total-display').innerText = `${robuxValue.toLocaleString()} Robux (~€${cashPrice})`;
+    }
+
+    function payWithPayPal() {
+        const itemName = document.getElementById('item-name').value || "Pop It Items";
+        const qty = document.getElementById('quantity').value;
+        
+        alert(`Redirecting to PayPal to complete your €${finalCash} payment...`);
+        
+        // REPLACE THIS WITH YOUR PAYPAL.ME LINK:
+        // Example: https://paypal.me/YOURUSERNAME/1.25EUR
+        window.open(`https://paypal.me`, '_blank');
     }
 
     function orderViaDiscord() {
-        const itemSelect = document.getElementById('popit-type');
-        const itemName = itemSelect.options[itemSelect.selectedIndex].text;
-        const quantity = document.getElementById('quantity').value;
-        const price = document.getElementById('total-display').innerText;
+        const itemName = document.getElementById('item-name').value || "Unspecified Item";
+        const qty = document.getElementById('quantity').value;
 
-        // Crafting the perfect message for Discord
-        const message = `👋 Hey! I want to order from the Pop It Marketplace:\n📦 Item: ${itemName}\n🔢 Quantity: ${quantity}\n💰 AI Total Price: ${price}\nPlease send me the real money checkout details!`;
+        // Build a professional order ticket for Discord
+        const message = `🚨 NEW POP IT MARKETPLACE ORDER 🚨\n📦 Item: ${itemName}\n🔢 Total Quantity: ${parseInt(qty).toLocaleString()}\n💎 Valuation: ${finalRobux} Robux Value\n💶 Total Cost: €${finalCash}\n\nI am messaging to finalize delivery details!`;
 
-        // Copies the text automatically so they can just paste it to you
+        // Copy order info to clipboard
         navigator.clipboard.writeText(message);
-        alert("🛒 Order text copied to clipboard! Paste it directly in Discord.");
+        alert("📋 Order details copied to clipboard! Paste this directly to me in Discord.");
 
-        // CHANGE THIS URL to your own Discord Profile Link or Server Invite Link!
+        // REPLACE THIS WITH YOUR DIRECT DISCORD PROFILE OR SERVER LINK
         window.open('https://discord.com', '_blank'); 
     }
+    
+    // Run once on load to establish baseline pricing
+    calculatePrice();
 </script>
 
 </body>
