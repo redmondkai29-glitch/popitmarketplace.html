@@ -1,53 +1,16 @@
-// When the PayPal SDK is ready, render a button for each .paypal-button div
-function renderPayPalButtons() {
-  const containers = document.querySelectorAll('.paypal-button');
-
-  containers.forEach(container => {
-    const price    = container.dataset.price;
-    const currency = container.dataset.currency || 'USD';
-    const name     = container.dataset.name;
-    const itemId   = container.dataset.productId;
-
-    // Render a PayPal button inside this container
-    paypal.Buttons({
-      style: {
-        shape:  'rect',
-        color:  'gold',
-        layout: 'vertical',
-        label:  'buynow'
-      },
-      createOrder: function(data, actions) {
-        // Build the order on the fly – no server needed for simple sales
-        return actions.order.create({
-          purchase_units: [{
-            reference_id: itemId,
-            description:  name,
-            amount: {
-              currency_code: currency,
-              value: price
-            }
-          }]
-        });
-      },
-      onApprove: function(data, actions) {
-        // Capture the funds
-        return actions.order.capture().then(details => {
-          // Simple success UI – replace with your own modal/toast if you like
-          alert(`✅ Purchase complete! Thank you, ${details.payer.name.given_name}.`);
-        });
-      },
-      onError: function(err) {
-        console.error('PayPal error', err);
-        alert('⚠️ Something went wrong. Please try again.');
-      }
-    }).render(container);
-  });
-}
-
-// Wait for the PayPal SDK to load, then init
-if (window.paypal) {
-  renderPayPalButtons();
-} else {
-  // SDK loads asynchronously – listen for it
-  window.addEventListener('paypal-sdk-ready', renderPayPalButtons);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pop-It-Trading</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Pop-It-Trading</h1>
+        <nav>
+            <ul>
+                <li><
+                      
