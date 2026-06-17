@@ -1,410 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pop It Trading - Elite Legendary Marketplace</title>
-    <style>
-        :root {
-            --bg-color: #06070d;
-            --card-bg: #111424;
-            --input-bg: #1a1f36;
-            --accent-cyan: #00f2fe;
-            --accent-purple: #9d4edd;
-            --paypal-color: #00457c;
-            --robux-color: #ffb830;
-            --discord-color: #5865F2;
-            --text-main: #ffffff;
-            --text-muted: #7e84a3;
-            --legendary-orange: #ff6b6b;
-        }
+// When the PayPal SDK is ready, render a button for each .paypal-button div
+function renderPayPalButtons() {
+  const containers = document.querySelectorAll('.paypal-button');
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  containers.forEach(container => {
+    const price    = container.dataset.price;
+    const currency = container.dataset.currency || 'USD';
+    const name     = container.dataset.name;
+    const itemId   = container.dataset.productId;
 
-        header {
-            background: linear-gradient(135deg, #3c096c, #111424);
-            padding: 50px 20px;
-            text-align: center;
-            border-bottom: 2px solid var(--accent-cyan);
-            position: relative;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 38px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px var(--accent-cyan);
-        }
-
-        header p {
-            margin: 12px 0 0 0;
-            color: #b388ff;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .wrapper {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
-        @media (min-width: 768px) {
-            .wrapper {
-                grid-template-columns: 1.3fr 1fr;
+    // Render a PayPal button inside this container
+    paypal.Buttons({
+      style: {
+        shape:  'rect',
+        color:  'gold',
+        layout: 'vertical',
+        label:  'buynow'
+      },
+      createOrder: function(data, actions) {
+        // Build the order on the fly – no server needed for simple sales
+        return actions.order.create({
+          purchase_units: [{
+            reference_id: itemId,
+            description:  name,
+            amount: {
+              currency_code: currency,
+              value: price
             }
-        }
+          }]
+        });
+      },
+      onApprove: function(data, actions) {
+        // Capture the funds
+        return actions.order.capture().then(details => {
+          // Simple success UI – replace with your own modal/toast if you like
+          alert(`✅ Purchase complete! Thank you, ${details.payer.name.given_name}.`);
+        });
+      },
+      onError: function(err) {
+        console.error('PayPal error', err);
+        alert('⚠️ Something went wrong. Please try again.');
+      }
+    }).render(container);
+  });
+}
 
-        section {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            border: 1px solid #232946;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
-        }
-
-        h2 {
-            margin-top: 0;
-            color: var(--accent-cyan);
-            font-size: 22px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #232946;
-            padding-bottom: 12px;
-            margin-bottom: 25px;
-            letter-spacing: 1px;
-        }
-
-        /* High-Value Item Grid */
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .item-card {
-            background: #0b0d18;
-            border: 1px solid #1e2238;
-            border-radius: 10px;
-            padding: 18px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
-        .item-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
-        }
-
-        .item-card h4 {
-            margin: 0 0 8px 0;
-            color: #fff;
-            font-size: 16px;
-        }
-
-        .item-badge {
-            display: inline-block;
-            background: rgba(255, 107, 107, 0.15);
-            color: var(--legendary-orange);
-            font-size: 12px;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--input-bg);
-            border: 1px solid #2e3554;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--accent-cyan);
-        }
-
-        /* Upgraded Pricing Display */
-        .price-panel {
-            background-color: #06070d;
-            padding: 22px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-cyan);
-            margin: 25px 0;
-        }
-
-        .price-panel h3 {
-            margin: 0;
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            padding: 5px 0;
-        }
-
-        .price-label {
-            font-size: 14px;
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .price-amount {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .paypal-text { color: #0079c1; }
-        .robux-text { color: var(--robux-color); }
-
-        .deal-tag {
-            background: #25d366;
-            color: #000;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-top: 10px;
-            display: inline-block;
-            visibility: hidden;
-        }
-
-        /* Action Buttons */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-sizing: border-box;
-            text-decoration: none;
-            margin-bottom: 12px;
-        }
-
-        .btn-paypal {
-            background-color: var(--paypal-color);
-            color: #fff;
-            border: 1px solid #0079c1;
-        }
-        .btn-paypal:hover { background-color: #00599c; }
-
-        .btn-robux {
-            background-color: #3b3c40;
-            color: var(--robux-color);
-            border: 1px solid var(--robux-color);
-        }
-        .btn-robux:hover { background-color: var(--robux-color); color: #000; }
-
-        .btn-discord {
-            background-color: var(--discord-color);
-            color: #fff;
-        }
-        .btn-discord:hover { background-color: #424eba; }
-
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-muted);
-            font-size: 12px;
-            letter-spacing: 0.5px;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>Pop It Trading - Mythic Market</h1>
-        <p>Premium High-Value Items • Choose PayPal or Robux Payment • DM on Discord to Finalize</p>
-    </header>
-
-    <div class="wrapper">
-        
-        <section>
-            <h2>Legendary & Mythic Stock Vault</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: -15px; margin-bottom: 25px;">Select an ultra-rare asset below to autofill your order config instantly:</p>
-            
-            <div class="inventory-grid">
-                <div class="item-card" onclick="selectQuickItem('Sparkly Boo (Godly)', 1000)">
-                    <h4>Sparkly Boo</h4>
-                    <span class="item-badge">1k (100 Robux Value)</span>
-                </div>
-                <div class="item-card" onclick="selectQuickItem('Sparkly Boo (Mega Deal)', 10000)">
-                    <h4>Sparkly Boo</h4>
-                    <span class="item-badge">10k Bulk (600 Robux)</span>
-                </div>
-                <div class="item-card" onclick="selectQuickItem('Rainbow Banana (Mythic)', 5000)">
-                    <h4>Rainbow Banana</h4>
-                    <span class="item-badge">5k High Tier</span>
-                </div>
-                <div class="item-card" onclick="selectQuickItem('Real Sugar (Secret)', 2000)">
-                    <h4>Real Sugar</h4>
-                    <span class="item-badge">2k Collector Vault</span>
-                </div>
-                <div class="item-card" onclick="selectQuickItem('Glow Unicorn (Ultra)', 3000)">
-                    <h4>Glow Unicorn</h4>
-                    <span class="item-badge">3k Limited Supply</span>
-                </div>
-                <div class="item-card" onclick="selectQuickItem('Mega Square (Overpowered)', 15000)">
-                    <h4>Mega Square</h4>
-                    <span class="item-badge">15k Whales Only</span>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2>Secure Configuration Desk</h2>
-            
-            <div class="form-group">
-                <label for="item-input">Custom Item Designation</label>
-                <input type="text" id="item-input" value="Sparkly Boo (Godly)" placeholder="Type custom asset name..." oninput="runPricingEngine()">
-            </div>
-
-            <div class="form-group">
-                <label for="qty-input">Volume Multiplier (Quantity)</label>
-                <input type="number" id="qty-input" value="1000" min="1" step="500" oninput="runPricingEngine()">
-            </div>
-
-            <div class="price-panel">
-                <h3>Calculated Checkout Rates:</h3>
-                
-                <div class="price-row">
-                    <span class="price-label">PayPal Option:</span>
-                    <span class="price-amount paypal-text" id="paypal-display">€1.25</span>
-                </div>
-                
-                <div class="price-row">
-                    <span class="price-label">Robux Option:</span>
-                    <span class="price-amount robux-text" id="robux-display">100 R$</span>
-                </div>
-
-                <div class="deal-tag" id="deal-tag">🔥 HUGE BULK DEAL ACTIVE!</div>
-            </div>
-
-            <button class="btn btn-paypal" onclick="handlePaymentIntent('PayPal')">💳 Buy via PayPal (DM on Discord)</button>
-            <button class="btn btn-robux" onclick="handlePaymentIntent('Robux')">🪙 Buy via Robux Gamepass (DM on Discord)</button>
-            <button class="btn btn-discord" onclick="executeDiscordSubmission('Direct Contact')">💬 Just DM Me On Discord</button>
-        </section>
-
-    </div>
-
-    <footer>
-        &copy; 2026 Elite Pop It Trading Operations. All assets handled securely via trusted trade blocks.
-    </footer>
-
-    <script>
-        let currentCalculatedRobux = 100;
-        let currentCalculatedCash = 1.25;
-
-        function selectQuickItem(name, quantity) {
-            document.getElementById('item-input').value = name;
-            document.getElementById('qty-input').value = quantity;
-            runPricingEngine();
-        }
-
-        function runPricingEngine() {
-            const quantityInput = parseInt(document.getElementById('qty-input').value) || 0;
-            const dealTagElement = document.getElementById('deal-tag');
-            
-            let assignedRobuxValue = 0;
-
-            // Strict Pricing Scaling Matrix:
-            // 1k Sparkly Boo = 100 Robux base rate
-            // 10k Sparkly Boo = 600 Robux bulk rate deal
-            if (quantityInput >= 10000) {
-                assignedRobuxValue = Math.floor(quantityInput * 0.06);
-                dealTagElement.style.visibility = 'visible';
-                dealTagElement.innerText = "🔥 BULK SCALING RATE ACTIVATED (SAVE BIG)!";
-            } else if (quantityInput >= 5000) {
-                assignedRobuxValue = Math.floor(quantityInput * 0.08);
-                dealTagElement.style.visibility = 'visible';
-                dealTagElement.innerText = "🔥 20% MID-TIER DISCOUNT ENGAGED!";
-            } else {
-                assignedRobuxValue = Math.floor(quantityInput * 0.1);
-                dealTagElement.style.visibility = 'hidden';
-            }
-
-            // Real money conversion calculation factor
-            let fiatCashValue = (assignedRobuxValue * 0.0125).toFixed(2);
-
-            currentCalculatedRobux = assignedRobuxValue;
-            currentCalculatedCash = fiatCashValue;
-
-            // Render both pricing variants dynamically
-            document.getElementById('paypal-display').innerText = `€${fiatCashValue}`;
-            document.getElementById('robux-display').innerText = `${assignedRobuxValue.toLocaleString()} R$`;
-        }
-
-        function handlePaymentIntent(method) {
-            const targetItem = document.getElementById('item-input').value || "Items";
-            const targetQuantity = document.getElementById('qty-input').value || "0";
-            const totalCost = method === 'PayPal' ? `€${currentCalculatedCash}` : `${currentCalculatedRobux} Robux`;
-
-            alert(`You chose to pay with ${method}! Copying order data. Please paste this directly into our Discord DM to complete the trade.`);
-            
-            executeDiscordSubmission(method);
-        }
-
-        function executeDiscordSubmission(selectedMethod) {
-            const targetItem = document.getElementById('item-input').value || "Unspecified Item";
-            const targetQuantity = document.getElementById('qty-input').value || "0";
-
-            const constructedManifest = `👑 NEW POP IT TRADING MARKET TICKET 👑\n📦 Asset: ${targetItem}\n🔢 Quantity: ${parseInt(targetQuantity).toLocaleString()}\n💳 Selected Payment Method: ${selectedMethod}\n💰 Final Agreed Price: ${currentCalculatedRobux} Robux OR €${currentCalculatedCash}\n\n[Action required: Please open trade block and send checkout details via DM!]`;
-
-            navigator.clipboard.writeText(constructedManifest);
-            alert("📋 Order details copied to your clipboard! Opening Discord now—paste it straight into the DM.");
-
-            // Put your actual Discord Link right between these quotes:
-            window.open('https://discord.com', '_blank');
-        }
-
-        // Run baseline configuration
-        runPricingEngine();
-    </script>
-</body>
-</html>
+// Wait for the PayPal SDK to load, then init
+if (window.paypal) {
+  renderPayPalButtons();
+} else {
+  // SDK loads asynchronously – listen for it
+  window.addEventListener('paypal-sdk-ready', renderPayPalButtons);
+}
